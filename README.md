@@ -1,6 +1,6 @@
-# 🎮 Shatter Force
+# 🎮 Shadow Wizard 🧙‍♂️✨
 
-**Shater Force** es un juego de plataformas 2D side-scrolling desarrollado con HTML5 Canvas y JavaScript puro, sin frameworks externos.
+**Shadow Wizard** es un juego de plataformas 2D side-scrolling desarrollado con HTML5 Canvas y JavaScript puro, sin frameworks externos.
 
 ![Shadow Wizard Banner](screenshots/banner.png)
 
@@ -22,7 +22,7 @@
 
 ## 🎯 Descripción
 
-Shater Force es un arcade shooter side-scrolling donde controlas a un guerrero que debe atravesar 3 niveles llenos de enemigos, plataformas peligrosas y tesoros escondidos. Cada nivel presenta desafíos únicos con sistema de objetivos (estrellas) basado en rendimiento.
+Shadow Wizard es un arcade shooter side-scrolling donde controlas a un guerrero que debe atravesar 3 niveles llenos de enemigos, plataformas peligrosas y tesoros escondidos. Cada nivel presenta desafíos únicos con sistema de objetivos (estrellas) basado en rendimiento.
 
 ### 🌟 Misiones por Nivel
 - ⭐ **1 Estrella:** Encontrar la salida (portal)
