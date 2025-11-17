@@ -4,7 +4,7 @@ class Game {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        
+
         // Inicializar sistemas
         this.camera = new Camera();
         this.projectileSystem = new ProjectileSystem();
@@ -12,35 +12,38 @@ class Game {
         this.enemyManager = new EnemyManager();
         this.levelManager = new LevelManager();
         this.audioManager = new AudioManager();
-        
+
         // Estado del juego
         this.score = 0;
         this.lives = 3;
         this.enemiesKilled = 0;
         this.gameTimeInSeconds = 0;
         this.timerInterval = null;
-        
+
+        // Feed online (mensajes recibidos por WebSocket)
+        this.onlineFeed = [];
+
         // Power-ups
         this.powerUpSpawnCounter = 0;
         this.powerUpSpawnInterval = 60 * 20; // 20 segundos
-        
+
         // Controles
         this.keys = {};
         this.setupControls();
-        
+
         // Nivel
         this.platforms = [];
         this.groundLevel = canvas.height - 170;
-        
+
         // Player
         this.player = null;
-        
+
         // Background
         this.background = null;
-        
+
         // Resize
         window.addEventListener('resize', () => this.resizeCanvas());
-        
+
         // Precargar audio
         this.audioManager.preloadAll();
     }
@@ -67,7 +70,7 @@ class Game {
             this.keys[e.key] = true;
 
             // Disparar
-            if ((e.key === 'd' || e.key === 'D' || e.key === 'f' || e.key === 'F') && 
+            if ((e.key === 'd' || e.key === 'D' || e.key === 'f' || e.key === 'F') &&
                 window.currentState === window.states.PLAYING) {
                 this.projectileSystem.shoot(this.player, this.levelManager.currentLevel);
                 this.audioManager.playSound('shoot');
@@ -91,13 +94,13 @@ class Game {
 
     loadLevel() {
         this.resizeCanvas();
-        
+
         this.camera.x = 0;
         this.camera.targetX = 0;
         this.projectileSystem.clear();
         this.itemManager.clear();
         this.enemyManager.clear();
-        
+
         this.platforms = this.levelManager.initPlatforms(
             this.canvas,
             this.resources.tileset
@@ -175,17 +178,17 @@ class Game {
     handleCollisions() {
         // 1. Colisiones con items
         const itemCollisions = this.itemManager.checkCollisions(this.player);
-        
+
         if (itemCollisions.score > 0) {
             this.score += itemCollisions.score;
             this.audioManager.playSound('coin');
         }
-        
+
         if (itemCollisions.powerUpCollected) {
             this.player.activatePowerUp();
             this.audioManager.playSound('powerup');
         }
-        
+
         if (itemCollisions.portalEntered) {
             this.audioManager.playSound('portal');
             console.log('¡Nivel completado desde Game.js!');
@@ -197,14 +200,14 @@ class Game {
         // 2. Colisiones proyectil-enemigo
         const activeProjectiles = this.projectileSystem.getProjectiles();
         const projectileHits = this.enemyManager.checkProjectileCollisions(activeProjectiles);
-        
+
         if (projectileHits.enemiesKilled > 0) {
             this.enemiesKilled += projectileHits.enemiesKilled;
             this.score += projectileHits.enemiesKilled * 50;
             this.audioManager.playSound('enemy-death');
             console.log(`Total enemigos eliminados: ${this.enemiesKilled}`);
         }
-        
+
         if (projectileHits.hitProjectiles.length > 0) {
             this.projectileSystem.removeProjectiles(projectileHits.hitProjectiles);
         }
@@ -222,10 +225,10 @@ class Game {
 
     handlePowerUpSpawn() {
         this.powerUpSpawnCounter++;
-        
+
         if (this.powerUpSpawnCounter >= this.powerUpSpawnInterval) {
             this.powerUpSpawnCounter = 0;
-            
+
             if (this.itemManager.powerUps.length === 0) {
                 this.itemManager.spawnPowerUp(
                     this.camera.x,
@@ -250,13 +253,13 @@ class Game {
         this.camera.apply(this.ctx);
 
         this.itemManager.draw(this.ctx);
-        
+
         this.platforms.forEach(p => p.draw(this.ctx));
-        
+
         this.enemyManager.draw(this.ctx);
-        
+
         this.player.draw(this.ctx);
-        
+
         this.projectileSystem.draw(this.ctx);
 
         if (this.levelManager.currentLevel === 1 && this.camera.x < 400) {
@@ -264,6 +267,9 @@ class Game {
         }
 
         this.ctx.restore();
+
+        // Dibujar el feed online en coordenadas de pantalla (sin cámara)
+        this.drawOnlineFeed();
     }
 
     drawTutorial() {
@@ -290,6 +296,41 @@ class Game {
         this.ctx.shadowBlur = 0;
     }
 
+    // Panel del apartado online
+    drawOnlineFeed() {
+        if (!this.onlineFeed || this.onlineFeed.length === 0) return;
+
+        const ctx = this.ctx;
+        const panelY = 60; // <- más abajo para no tapar las vidas
+
+        ctx.save();
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(10, panelY, 340, 110); // panel negro
+
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'left';
+
+        ctx.fillText('ONLINE FEED', 20, panelY + 20);
+
+        let y = panelY + 40;
+        for (const msg of this.onlineFeed) {
+            const level = (msg.level !== undefined && msg.level !== null) ? msg.level : '?';
+            const player = (msg.player !== undefined && msg.player !== null) ? msg.player : 'Anon';
+            const score = (msg.score !== undefined && msg.score !== null) ? msg.score : 0;
+
+            const text = `Lv ${level} - ${player}: ${score} pts`;
+            ctx.fillText(text, 20, y);
+            y += 18;
+        }
+
+        ctx.restore();
+    }
+
+
+
     onLevelComplete() {
         this.audioManager.playSound('level-complete');
         console.log("onLevelComplete llamado - cambiando estado...");
@@ -302,7 +343,7 @@ class Game {
 
     startTimer(callback) {
         if (this.timerInterval) clearInterval(this.timerInterval);
-        
+
         this.gameTimeInSeconds = 0;
         this.timerInterval = setInterval(() => {
             this.gameTimeInSeconds++;
@@ -319,13 +360,13 @@ class Game {
 
     nextLevel() {
         const hasNext = this.levelManager.nextLevel();
-        
+
         if (hasNext) {
             this.loadLevel();
             this.player.reset(100, this.groundLevel);
             return true;
         }
-        
+
         return false;
     }
 }

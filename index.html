@@ -54,12 +54,29 @@
     <!-- Selección de Nivel -->
     <div id="levelSelectScreen" class="ui-screen hidden">
         <h2 class="screen-title">Seleccionar Nivel</h2>
+
+        <!-- NOMBRE DEL JUGADOR -->
+        <div id="playerNameContainer" style="text-align:center; margin-bottom: 20px;">
+            <input type="text" id="playerNameInput" placeholder="Ingresa tu nombre o nickname" maxlength="20" style="
+                padding: 10px 15px;
+                font-size: 18px;
+                border-radius: 8px;
+                border: none;
+                outline: none;
+                width: 280px;
+                text-align: center;
+                background: rgba(0,0,0,0.4);
+                color: white;
+            ">
+        </div>
+
         <div class="level-buttons">
             <button id="level1Button" class="ui-button">Nivel 1</button>
             <button id="level2Button" class="ui-button">Nivel 2</button>
             <button id="level3Button" class="ui-button">Nivel 3</button>
         </div>
         <button id="backToTitleButton" class="ui-button small">Volver</button>
+        <button id="globalScoresButton" class="ui-button">Puntajes Globales</button>
     </div>
 
     <!-- Pantalla de Pausa -->
@@ -123,6 +140,8 @@
 
     <!-- GAME: Clase principal -->
     <script src="game/Game.js"></script>
+
+    <script src="net/ws-client.js"></script>
 
     <!-- MAIN: Punto de entrada -->
     <script src="main.js"></script>

@@ -13,6 +13,7 @@ window.states = {
     LEVEL_COMPLETE: 'LEVEL_COMPLETE'
 };
 
+
 window.currentState = window.states.TITLE_SCREEN;
 
 function changeState(newState) {
@@ -20,9 +21,24 @@ function changeState(newState) {
     console.log('Estado cambiado a:', newState);
 }
 
+// ===============================
+// Nombre de jugador 
+// ===============================  
+
+// Nombre del jugador (persistente)
+window.playerName = localStorage.getItem('playerName') || '';
+
+function savePlayerName(name) {
+    const trimmed = (name || '').trim();
+    window.playerName = trimmed || '';
+    localStorage.setItem('playerName', window.playerName);
+}
+
+
+
 window.onload = function() {
     const canvas = document.getElementById('gameCanvas');
-    
+
     // Referencias UI
     const ui = {
         titleScreen: document.getElementById('titleScreen'),
@@ -32,14 +48,14 @@ window.onload = function() {
         levelCompleteScreen: document.getElementById('levelCompleteScreen'),
         hud: document.getElementById('hud'),
         missionsPanel: document.getElementById('missionsPanel'),
-        
+
         // HUD elements
         livesContainer: document.getElementById('livesContainer'),
         timerValue: document.getElementById('timerValue'),
         scoreValue: document.getElementById('scoreValue'),
         highScoreValue: document.getElementById('highScoreValue'),
         muteButton: document.getElementById('muteButton'),
-        
+
         // Level complete elements
         star1: document.getElementById('star1'),
         star2: document.getElementById('star2'),
@@ -54,9 +70,26 @@ window.onload = function() {
     window.performanceMonitor = null;
 
     // ===============================
+    // CONECTAR NOMBRE DE JUGADOR 
+    // ===============================
+
+    // Nombre del jugador (input en Selección de Nivel)
+    const playerNameInput = document.getElementById('playerNameInput');
+    if (playerNameInput) {
+        // Cargar el nombre guardado
+        playerNameInput.value = window.playerName;
+
+        // Guardar cada vez que lo cambie
+        playerNameInput.addEventListener('input', () => {
+            savePlayerName(playerNameInput.value);
+        });
+    }
+
+
+    // ===============================
     // FUNCIONES DE UI
     // ===============================
-    
+
     function showTitleScreen() {
         ui.titleScreen.classList.remove('hidden');
         ui.levelSelectScreen.classList.add('hidden');
@@ -65,13 +98,13 @@ window.onload = function() {
         ui.missionsPanel.classList.add('hidden');
         ui.gameOverScreen.classList.add('hidden');
         ui.levelCompleteScreen.classList.add('hidden');
-        
+
         if (window.touchControls) {
             window.touchControls.setVisible(false);
         }
-        
+
         changeState(window.states.TITLE_SCREEN);
-        
+
         // Actualizar high score en pantalla título
         updateHighScoreDisplay();
     }
@@ -79,12 +112,38 @@ window.onload = function() {
     function showLevelSelect() {
         ui.titleScreen.classList.add('hidden');
         ui.levelSelectScreen.classList.remove('hidden');
-        
+
         // Actualizar botones de nivel según progreso
         updateLevelButtons();
-        
+
         changeState(window.states.LEVEL_SELECT);
     }
+
+    // Mostrar puntajes globales (top 10)
+    function showGlobalScores() {
+        const scores = window.globalScores || [];
+
+        if (scores.length === 0) {
+            alert('Aún no hay puntajes globales.\nCompleta un nivel para enviar tu primer resultado online.');
+            return;
+        }
+
+        let msg = '🏆 Puntajes globales (Top 10)\n\n';
+
+        scores.forEach((s, i) => {
+            const player = s.player || 'Jugador';
+            const level = s.level || '?';
+
+            // Nada de "??" ni "? ?", solo ternario normal:
+            const stars = (s.stars !== undefined && s.stars !== null) ? s.stars : 0;
+            const score = (s.score !== undefined && s.score !== null) ? s.score : 0;
+
+            msg += `${i + 1}. ${player} - Nivel ${level} - ${score} pts - ⭐${stars}\n`;
+        });
+
+        alert(msg);
+    }
+
 
     function startGame(level = 1) {
         if (game) {
@@ -92,7 +151,7 @@ window.onload = function() {
             game.reset();
             updateHUD();
         }
-        
+
         // Ocultar TODAS las pantallas
         ui.titleScreen.classList.add('hidden');
         ui.levelSelectScreen.classList.add('hidden');
@@ -100,15 +159,15 @@ window.onload = function() {
         ui.gameOverScreen.classList.add('hidden');
         ui.levelCompleteScreen.classList.add('hidden');
         ui.missionsPanel.classList.add('hidden');
-        
+
         // Mostrar HUD y controles táctiles
         ui.hud.classList.remove('hidden');
         if (window.touchControls) {
             window.touchControls.setVisible(true);
         }
-        
+
         changeState(window.states.PLAYING);
-        
+
         game.startTimer(updateTimer);
     }
 
@@ -131,14 +190,14 @@ window.onload = function() {
         ui.pauseScreen.classList.add('hidden');
         ui.missionsPanel.classList.add('hidden');
         ui.gameOverScreen.classList.remove('hidden');
-        
+
         if (window.touchControls) {
             window.touchControls.setVisible(false);
         }
-        
+
         changeState(window.states.GAME_OVER);
         game.stopTimer();
-        
+
         // Guardar estadísticas
         SaveManager.updateGlobalStats(
             game.enemiesKilled,
@@ -153,14 +212,14 @@ window.onload = function() {
         ui.pauseScreen.classList.add('hidden');
         ui.missionsPanel.classList.add('hidden');
         ui.levelCompleteScreen.classList.remove('hidden');
-        
+
         if (window.touchControls) {
             window.touchControls.setVisible(false);
         }
-        
+
         changeState(window.states.LEVEL_COMPLETE);
         game.stopTimer();
-        
+
         checkObjectives();
     }
 
@@ -172,7 +231,7 @@ window.onload = function() {
 
     function toggleMissionsPanel() {
         ui.missionsPanel.classList.toggle('hidden');
-        
+
         if (!ui.missionsPanel.classList.contains('hidden')) {
             if (window.currentState === window.states.PLAYING) {
                 showPauseMenu();
@@ -194,7 +253,7 @@ window.onload = function() {
     // ===============================
     // ACTUALIZACIÓN DE HUD
     // ===============================
-    
+
     function updateHUD() {
         updateLivesDisplay();
         updateScoreDisplay();
@@ -226,7 +285,7 @@ window.onload = function() {
     function updateTimer(seconds) {
         const minutes = Math.floor(seconds / 60);
         const secs = seconds % 60;
-        ui.timerValue.textContent = 
+        ui.timerValue.textContent =
             `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
 
@@ -237,17 +296,17 @@ window.onload = function() {
 
     function updateMissions() {
         if (!game) return;
-        
+
         const level = game.levelManager.currentLevel;
         const enemyCount = game.enemyManager.getAliveCount();
         const coinCount = game.itemManager.getCoinCount();
         const scoreTarget = coinCount * 10;
-        
+
         const titleElement = document.getElementById('missionsPanelTitle');
         if (titleElement) {
             titleElement.textContent = `Misiones del Nivel ${level}`;
         }
-        
+
         const listElement = document.getElementById('missionsList');
         if (listElement) {
             listElement.innerHTML = `
@@ -266,13 +325,13 @@ window.onload = function() {
 
     function updateLevelButtons() {
         const unlockedLevels = SaveManager.getUnlockedLevels();
-        
+
         ['level1Button', 'level2Button', 'level3Button'].forEach((id, index) => {
             const level = index + 1;
             const button = document.getElementById(id);
             if (button) {
                 button.disabled = !unlockedLevels.includes(level);
-                
+
                 const levelInfo = SaveManager.getLevelInfo(level);
                 if (levelInfo) {
                     button.textContent = `Nivel ${level} ⭐${levelInfo.bestStars}`;
@@ -284,15 +343,15 @@ window.onload = function() {
     // ===============================
     // OBJETIVOS Y GUARDADO
     // ===============================
-    
+
     function checkObjectives() {
         if (!game) return;
-        
+
         const level = game.levelManager.currentLevel;
         const totalEnemies = getTotalEnemiesForLevel(level);
         const totalCoins = getTotalCoinsForLevel(level);
         const scoreTarget = totalCoins * 10;
-        
+
         const objective1 = game.enemiesKilled >= totalEnemies;
         const objective2 = game.score >= scoreTarget;
         const objective3 = true;
@@ -318,6 +377,20 @@ window.onload = function() {
             game.enemiesKilled
         );
 
+        // ===== APARTADO ONLINE: ENVIAR RESULTADOS =====
+        if (window.wsClient && wsClient.connected) {
+            wsClient.send({
+                type: 'level_complete',
+                player: window.playerName || "Sin Nombre",
+                level: level,
+                stars: stars,
+                score: game.score,
+                time: game.gameTimeInSeconds,
+                enemiesKilled: game.enemiesKilled,
+                timestamp: Date.now()
+            });
+        }
+
         // Guardar high score
         const isNewRecord = SaveManager.saveHighScore(game.score);
         if (isNewRecord) {
@@ -331,29 +404,37 @@ window.onload = function() {
             game.gameTimeInSeconds
         );
     }
-    
+
     function getTotalEnemiesForLevel(level) {
-        switch(level) {
-            case 1: return 7;
-            case 2: return 8;
-            case 3: return 11;
-            default: return 5;
+        switch (level) {
+            case 1:
+                return 7;
+            case 2:
+                return 8;
+            case 3:
+                return 11;
+            default:
+                return 5;
         }
     }
-    
+
     function getTotalCoinsForLevel(level) {
-        switch(level) {
-            case 1: return 25;
-            case 2: return 30;
-            case 3: return 35;
-            default: return 20;
+        switch (level) {
+            case 1:
+                return 25;
+            case 2:
+                return 30;
+            case 3:
+                return 35;
+            default:
+                return 20;
         }
     }
 
     // ===============================
     // CONTROLES GLOBALES
     // ===============================
-    
+
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             if (ui.missionsPanel && !ui.missionsPanel.classList.contains('hidden')) {
@@ -366,7 +447,7 @@ window.onload = function() {
         }
 
         if (e.key === 'm' || e.key === 'M') {
-            if (window.currentState === window.states.PLAYING || 
+            if (window.currentState === window.states.PLAYING ||
                 window.currentState === window.states.PAUSED) {
                 toggleMissionsPanel();
             }
@@ -376,45 +457,46 @@ window.onload = function() {
     // ===============================
     // BOTONES UI
     // ===============================
-    
+
     document.getElementById('playButton').onclick = () => showLevelSelect();
     document.getElementById('level1Button').onclick = () => startGame(1);
     document.getElementById('level2Button').onclick = () => startGame(2);
     document.getElementById('level3Button').onclick = () => startGame(3);
     document.getElementById('backToTitleButton').onclick = () => showTitleScreen();
-    
+    document.getElementById('globalScoresButton').onclick = () => showGlobalScores();
+
     document.getElementById('resumeButton').onclick = () => resumeGame();
     document.getElementById('restartButton').onclick = () => startGame(game.levelManager.currentLevel);
     document.getElementById('pauseBackToMenuButton').onclick = () => returnToMainMenu();
-    
+
     document.getElementById('missionsButton').onclick = () => toggleMissionsPanel();
     document.getElementById('closeMissionsButton').onclick = () => closeMissionsPanel();
-    
+
     if (ui.muteButton) {
         ui.muteButton.onclick = () => {
             game.audioManager.toggleMute();
             updateMuteButton();
         };
     }
-    
+
     document.getElementById('gameOverBackToMenuButton').onclick = () => returnToMainMenu();
-    
+
     document.getElementById('nextLevelButton').onclick = () => {
         ui.levelCompleteScreen.classList.add('hidden');
-        
+
         if (game.levelManager.currentLevel < 3) {
             startGame(game.levelManager.currentLevel + 1);
         } else {
             returnToMainMenu();
         }
     };
-    
+
     document.getElementById('levelCompleteBackToMenuButton').onclick = () => returnToMainMenu();
 
     // ===============================
     // GAME LOOP
     // ===============================
-    
+
     function gameLoop() {
         if (game) {
             // Actualizar monitor de rendimiento
@@ -424,28 +506,28 @@ window.onload = function() {
 
             if (window.currentState === window.states.PLAYING) {
                 game.update();
-                
+
                 const itemCollisions = game.itemManager.checkCollisions(game.player);
                 if (itemCollisions.portalEntered) {
                     console.log('Portal detectado en gameLoop');
                     showLevelComplete();
                 }
-                
+
                 if (game.player && game.player.lives <= 0) {
                     showGameOver();
                 }
-                
+
                 updateLivesDisplay();
                 updateScoreDisplay();
                 updateHighScoreDisplay();
-                
+
                 game.render();
             } else {
                 game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
-                
+
                 if (game.background) {
                     game.background.draw(game.ctx, game.canvas.width, game.canvas.height);
-                    
+
                     const tint = game.levelManager.getLevelTint();
                     if (tint) {
                         game.background.applyTint(game.ctx, tint, game.canvas.width, game.canvas.height);
@@ -453,34 +535,57 @@ window.onload = function() {
                 }
             }
         }
-        
+
         requestAnimationFrame(gameLoop);
     }
 
     // ===============================
     // INICIALIZACIÓN
     // ===============================
-    
+
     loadResources(function(resources) {
         console.log("Recursos cargados. Inicializando juego...");
-        
+
         // Crear instancia del juego
         window.game = new Game(canvas);
         game.init(resources);
-        
+
+        // ==== ONLINE (WebSocket) ====
+        // Conectar al servidor WebSocket
+
+        window.globalScores = [];
+        const WS_URL = 'wss://shadowwizard-online-server.onrender.com';
+        wsClient.connect(WS_URL);
+
+        // Cuando llegan mensajes del servidor (scores de otros jugadores, etc.)
+        wsClient.onMessage((msg) => {
+            // 1) Mensajes individuales de nivel completo → ONLINE FEED
+            if (msg.type === 'level_complete') {
+                if (!game.onlineFeed) game.onlineFeed = [];
+                game.onlineFeed.unshift(msg);
+                game.onlineFeed = game.onlineFeed.slice(0, 5); // máximo 5 mensajes
+            }
+
+            // 2) Snapshot de puntajes globales → RANKING GLOBAL
+            if (msg.type === 'scores_snapshot' && Array.isArray(msg.scores)) {
+                window.globalScores = msg.scores.slice(); // copiar top enviado por el servidor
+            }
+        });
+
+
         // Inicializar controles táctiles
         window.touchControls = new TouchControls();
         window.touchControls.init();
-        
+
         // Inicializar monitor de rendimiento
         window.performanceMonitor = new PerformanceMonitor();
-        
+
         // Mostrar pantalla de título
         showTitleScreen();
-        
+
         // Iniciar game loop
         gameLoop();
-        
+
         console.log("Juego iniciado correctamente");
         console.log("Progreso guardado:", SaveManager.getProgressSummary());
     });
