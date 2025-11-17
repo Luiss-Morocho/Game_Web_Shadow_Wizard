@@ -2,7 +2,7 @@
 
 **Shadow Wizard** es un juego de plataformas 2D side-scrolling desarrollado con HTML5 Canvas y JavaScript puro, sin frameworks externos.
 
-![Shadow Wizard Banner](screenshots/banner.png)
+![Shadow Wizard Banner](screenshots/title.png)
 
 ---
 
