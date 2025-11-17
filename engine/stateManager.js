@@ -1,28 +1,35 @@
-window.states = {
-    TITLE_SCREEN: 0,
-    LEVEL_SELECT: 1,
-    PLAYING: 2,
-    PAUSED: 3,
-    GAME_OVER: 4,
-    LEVEL_COMPLETE: 5
+// engine/stateManager.js
+
+// Usamos 'const' en lugar de 'var' para un módulo moderno
+const stateManager = {
+    states: {},
+    currentState: null,
+    
+    addState: function(name, state) {
+        this.states[name] = state;
+    },
+    
+    setState: function(name) {
+        if (this.states[name]) {
+            this.currentState = this.states[name];
+            if (this.currentState.enter) {
+                this.currentState.enter(); // Llama al método enter del estado
+            }
+        }
+    },
+    
+    update: function(dt) {
+        if (this.currentState && this.currentState.update) {
+            this.currentState.update(dt);
+        }
+    },
+    
+    render: function() {
+        if (this.currentState && this.currentState.render) {
+            this.currentState.render();
+        }
+    }
 };
 
-window.currentState = window.states.TITLE_SCREEN;
-
-function changeState(newState) {
-    window.currentState = newState;
-    console.log("Estado cambiado a: " + newState);
-}
-
-// Estas funciones solo loguearán, main.js hará el trabajo
-function startGame() {
-    console.log("Iniciando el juego...");
-}
-
-function showMenu() {
-    console.log("Mostrando el menú...");
-}
-
-function showGameOver() {
-    console.log("Mostrando Game Over...");
-}
+// Exportamos tu objeto 'stateManager' como el "default"
+export default stateManager;

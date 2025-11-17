@@ -1,11 +1,11 @@
-/* Asegúrate de que el body y el canvas ocupen todo */
+/* style.css - ACTUALIZADO CON TOUCH CONTROLS */
 
 body {
     margin: 0;
     padding: 0;
     background-color: #000;
     overflow: hidden;
-    /* Evita barras de scroll */
+    font-family: 'Arial', sans-serif;
 }
 
 canvas {
@@ -14,14 +14,9 @@ canvas {
     height: 100vh;
 }
 
-
 /* ===================
  ESTILOS DE UI 
-===================
-*/
-
-
-/* Contenedor principal para las pantallas de UI */
+=================== */
 
 .ui-screen {
     position: absolute;
@@ -29,33 +24,45 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    /* Centrar contenido */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* Estilos de fuente */
     color: white;
     font-family: 'Arial', sans-serif;
-    /* Cambia esto por una fuente más de "juego" si tienes una */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    /* Fondo semi-transparente opcional */
     background-color: rgba(0, 0, 0, 0.3);
 }
 
-
-/* Clase para ocultar pantallas que no están activas */
-
 .hidden {
-    display: none;
+    display: none !important;
 }
 
-
 /* Títulos */
-
 .game-title {
     font-size: 5rem;
     margin-bottom: 20px;
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 1);
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    color: #aaa;
+}
+
+.credits {
+    margin-top: 30px;
+    font-size: 1rem;
+    color: #888;
+}
+
+.high-score-display {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    color: #FFD700;
+    text-shadow: 2px 2px 4px black;
 }
 
 .screen-title {
@@ -63,9 +70,7 @@ canvas {
     margin-bottom: 40px;
 }
 
-
-/* Estilo de Botones */
-
+/* Botones */
 .ui-button {
     font-size: 1.5rem;
     padding: 15px 30px;
@@ -104,16 +109,12 @@ canvas {
 
 .level-buttons {
     display: flex;
+    gap: 20px;
 }
 
-
-/* ... (todos tus estilos existentes) ... */
-
-
 /* ===================
- ESTILOS DE HUD (ACTUALIZADO)
-===================
-*/
+ HUD
+=================== */
 
 #hud {
     position: absolute;
@@ -123,7 +124,6 @@ canvas {
     height: 70px;
     display: flex;
     justify-content: space-between;
-    /* Esto ahora funcionará */
     align-items: center;
     padding: 0 20px;
     box-sizing: border-box;
@@ -132,6 +132,7 @@ canvas {
     font-size: 1.5rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     background-color: rgba(0, 0, 0, 0.2);
+    z-index: 100;
 }
 
 #hudLives {
@@ -140,38 +141,28 @@ canvas {
 
 #hudTimer {
     font-size: 2rem;
-    /* Centrado absoluto (sigue igual) */
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
 }
 
-
-/* NUEVO GRUPO DERECHO */
-
 #hudRight {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 #hudScore {
-    margin-right: 20px;
+    margin-right: 10px;
 }
-
-#missionsButton {
-    margin: 0;
-}
-
 
 /* ===================
- ESTILOS PANEL DE MISIONES (NUEVO)
-===================
-*/
+ PANEL DE MISIONES
+=================== */
 
 .ui-panel {
     position: absolute;
     top: 80px;
-    /* Debajo del HUD */
     right: 20px;
     width: 300px;
     padding: 20px;
@@ -181,6 +172,7 @@ canvas {
     color: white;
     font-family: 'Arial', sans-serif;
     text-shadow: 1px 1px 2px black;
+    z-index: 150;
 }
 
 .ui-panel h4 {
@@ -195,36 +187,29 @@ canvas {
     padding-left: 20px;
 }
 
-
 /* ===================
- ESTILO DE GAME OVER
-===================
-*/
+ GAME OVER
+=================== */
 
 .game-over-title {
     color: #E62E2E;
-    /* Un rojo fuerte */
     font-size: 6rem;
-    /* Más grande que los otros títulos */
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 1);
 }
 
-
 /* ===================
- ESTILOS DE NIVEL COMPLETADO
-===================
-*/
+ NIVEL COMPLETADO
+=================== */
 
 .star-rating {
     font-size: 4rem;
     color: #555;
-    /* Color de estrella vacía */
     margin-bottom: 20px;
 }
 
 .star-rating .filled {
     color: #FFD700;
-    /* Color de estrella llena (dorado) */
+    text-shadow: 0 0 10px #FFD700;
 }
 
 #missionResults {
@@ -232,4 +217,204 @@ canvas {
     text-align: center;
     color: #ddd;
     margin-bottom: 20px;
+}
+
+/* ===================
+ CONTROLES TÁCTILES
+=================== */
+
+#touchControls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    pointer-events: none;
+    z-index: 200;
+}
+
+.touch-button {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.2);
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    text-shadow: 2px 2px 4px black;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    transition: all 0.1s ease;
+}
+
+.touch-button:active {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0.95);
+}
+
+/* ===================
+ MONITOR DE RENDIMIENTO
+=================== */
+
+#performanceMonitor {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    padding: 10px;
+    border: 2px solid #0f0;
+    border-radius: 4px;
+    z-index: 9999;
+    min-width: 150px;
+    user-select: none;
+}
+
+#performanceMonitor div {
+    margin: 2px 0;
+}
+
+/* ===================
+ RESPONSIVE (MÓVILES)
+=================== */
+
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 3rem;
+    }
+
+    .screen-title {
+        font-size: 2rem;
+    }
+
+    .ui-button {
+        font-size: 1.2rem;
+        padding: 12px 24px;
+    }
+
+    .level-buttons {
+        flex-direction: column;
+    }
+
+    #hudLives,
+    #hudTimer,
+    #hudScore {
+        font-size: 1.2rem;
+    }
+
+    .ui-panel {
+        width: 250px;
+        top: 70px;
+        right: 10px;
+        font-size: 0.9rem;
+    }
+
+    .star-rating {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-title {
+        font-size: 2.5rem;
+    }
+
+    .ui-button {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+
+    #hud {
+        height: 60px;
+        font-size: 1rem;
+    }
+
+    #hudLives,
+    #hudTimer,
+    #hudScore {
+        font-size: 1rem;
+    }
+
+    .ui-panel {
+        width: calc(100% - 20px);
+        right: 10px;
+    }
+}
+
+/* ===================
+ ORIENTACIÓN LANDSCAPE (MÓVIL)
+=================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .game-title {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .screen-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .ui-button {
+        font-size: 1rem;
+        padding: 8px 16px;
+        margin: 5px;
+    }
+
+    .level-buttons {
+        flex-direction: row;
+    }
+}
+
+/* ===================
+ ANIMACIONES
+=================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.ui-screen {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.ui-button:hover {
+    animation: pulse 1s infinite;
+}
+
+/* ===================
+ ACCESIBILIDAD
+=================== */
+
+.ui-button:focus {
+    outline: 3px solid #FFD700;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
 }
