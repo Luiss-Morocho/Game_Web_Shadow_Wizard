@@ -339,7 +339,7 @@ window.audioManager.toggleMute()
 
 ## 🎬 Video Gameplay
 
-[Ver video en YouTube]()  
+[Ver video en YouTube](https://youtu.be/liGJS6miimQ)  
 Duración: 60 segundos
 
 ---
