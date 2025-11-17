@@ -467,7 +467,7 @@ El servidor se encarga de:
 
 ---
 
-## 🖥️ Backend (Node.js + WebSocket)
+## 🖥️ Node.js + WebSocket
 
 El servidor online está construido con:
 
@@ -478,6 +478,31 @@ El servidor online está construido con:
 
 Repositorio del servidor:  
 👉 https://github.com/Luiss-Morocho/ShadowWizard-Online-Server
+
+---
+
+---
+
+---
+
+## 🛰️ Deploy en Render
+
+El servidor WebSocket está desplegado en la nube mediante **Render**, lo que permite que el juego funcione en línea sin configuración adicional del usuario.
+
+Ventajas del deploy:
+
+- 🚀 Deploy automático desde GitHub  
+- 🔐 URL segura con protocolo `wss://`  
+- 🌍 Acceso global desde cualquier navegador  
+- ♾️ Servicio que se reinicia automáticamente si falla  
+
+URL del servidor en producción:
+
+```txt
+wss://shadowwizard-online-server.onrender.com
+```
+
+Gracias a Render, el sistema online funciona 24/7 y permite que todos los jugadores compartan su actividad en tiempo real.
 
 ---
 
@@ -508,19 +533,6 @@ window.globalScores
 ```
 
 Este ranking puede consultarse desde el menú mediante el botón **Puntajes Globales**.
-
----
-
-## 🧑‍💻 Nickname del Jugador
-
-En la pantalla de selección de nivel, el jugador puede ingresar un nombre o nickname personalizado.
-
-Ese nombre se utiliza para:
-
-- Registrar sus resultados en el ranking global  
-- Mostrar su identidad en el Online Feed  
-- Asociar sus estadísticas al historial online  
-- Personalizar la experiencia multijugador simple  
 
 ---
 
