@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shatter Force</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="hud" class="hidden">
+
+        <div id="hudLives">
+            <span id="livesContainer"></span>
+        </div>
+
+        <div id="hudTimer">
+            <span id="timerValue">00:00</span>
+        </div>
+
+        <div id="hudRight">
+            <div id="hudScore">
+                Puntaje: <span id="scoreValue">0</span>
+            </div>
+            <button id="missionsButton" class="ui-button small">Misiones (M)</button>
+        </div>
+
+    </div>
+
+    <div id="missionsPanel" class="ui-panel hidden">
+        <h4>Misiones del Nivel 1</h4>
+        <ul>
+            <li>Encuentra la salida.</li>
+            <li>Derrota a 3 enemigos.</li>
+            <li>Consigue 100 puntos.</li>
+        </ul>
+        <button id="closeMissionsButton" class="ui-button small">Cerrar</button>
+    </div>
+
+    <div id="titleScreen" class="ui-screen">
+        <h1 class="game-title">Shatter Force</h1>
+        <button id="playButton" class="ui-button">Jugar</button>
+    </div>
+
+    <div id="levelSelectScreen" class="ui-screen hidden">
+        <h2 class="screen-title">Seleccionar Nivel</h2>
+        <div class="level-buttons">
+            <button id="level1Button" class="ui-button">Nivel 1</button>
+            <button id="level2Button" class="ui-button">Nivel 2</button>
+            <button id="level3Button" class="ui-button">Nivel 3</button>
+        </div>
+        <button id="backToTitleButton" class="ui-button small">Volver</button>
+    </div>
+
+    <div id="pauseScreen" class="ui-screen hidden">
+        <h2 class="screen-title">Pausa</h2>
+        <button id="resumeButton" class="ui-button">Reanudar</button>
+        <button id="restartButton" class="ui-button">Reiniciar</button>
+        <button id="pauseBackToMenuButton" class="ui-button small">Volver al Menú</button>
+    </div>
+
+    <div id="gameOverScreen" class="ui-screen hidden">
+        <h2 class="screen-title game-over-title">Game Over</h2>
+        <button id="gameOverBackToMenuButton" class="ui-button">Volver al Menú</button>
+    </div>
+
+    <div id="levelCompleteScreen" class="ui-screen hidden">
+        <h2 class="screen-title">¡Nivel Completado!</h2>
+
+        <div class="star-rating">
+            <span id="star1">☆</span>
+            <span id="star2">☆</span>
+            <span id="star3">☆</span>
+        </div>
+
+        <div id="missionResults">
+            <p id="result-enemies">Enemigos derrotados: 0 / 3</p>
+            <p id="result-score">Puntaje obtenido: 0 / 100</p>
+        </div>
+
+        <button id="nextLevelButton" class="ui-button">Siguiente Nivel</button>
+        <button id="levelCompleteBackToMenuButton" class="ui-button small">Menú Principal</button>
+    </div>
+
+    <script src="platforms.js"></script>
+    <script src="enemy.js"></script>
+    <script src="engine/loader.js"></script>
+    <script src="engine/stateManager.js"></script>
+    <script src="game/arcade/arcade.js"></script>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
