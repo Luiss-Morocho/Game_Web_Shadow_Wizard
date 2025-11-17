@@ -423,6 +423,130 @@ Duración: 60 segundos
 ## 🎯 **PUNTAJE TOTAL: 105/100**
 
 ---
+# 🎁 BONUS (+5%) – Sistema Online (WebSocket + Ranking Global)
+
+Shadow Wizard implementa una funcionalidad **online real** mediante WebSockets, permitiendo registrar puntajes en un **ranking global persistente**, mostrar actividad de otros jugadores en tiempo real y sincronizar estadísticas entre todos los clientes conectados.
+
+---
+
+## 🌐 Sistema Multijugador Simple (Online Feed + Ranking Global)
+
+El juego se conecta automáticamente a un **servidor WebSocket** alojado en Render.  
+Desde ese momento, cada jugador forma parte de un entorno online donde:
+
+- ✔ Se registran sus resultados al completar niveles  
+- ✔ Ve actividad reciente de otros jugadores (Online Feed)  
+- ✔ Se actualiza un Top 10 global persistente  
+- ✔ Todo fluye en tiempo real sin recargar la página  
+
+---
+
+## ⚙️ ¿Cómo funciona?
+
+Cuando el jugador completa un nivel, el juego envía un mensaje JSON al servidor:
+
+```json
+{
+  "type": "level_complete",
+  "player": "Nickname",
+  "level": 1,
+  "stars": 3,
+  "score": 560,
+  "time": 42
+}
+```
+
+---
+
+El servidor se encarga de:
+
+- Guardar cada entrada en `scores.json` para asegurar persistencia real  
+- Ordenar los puntajes para generar el **Top 10 Global**  
+- Reenviar el evento `level_complete` a todos los jugadores conectados  
+- Enviar mensajes periódicos `scores_snapshot` con el ranking actualizado  
+
+---
+
+## 🖥️ Backend (Node.js + WebSocket)
+
+El servidor online está construido con:
+
+- **Node.js**
+- **Librería `ws` para WebSocket**
+- **Persistencia mediante archivo `scores.json`**
+- **Broadcast global en tiempo real**
+
+Repositorio del servidor:  
+👉 https://github.com/Luiss-Morocho/ShadowWizard-Online-Server
+
+---
+
+## 🔌 Comunicación Juego ↔ Servidor
+
+```js
+wsClient.connect('wss://shadowwizard-online-server.onrender.com');
+```
+
+El juego puede recibir dos tipos principales de mensajes enviados por el servidor:
+
+### 1️⃣ `level_complete`
+Indica que **otro jugador** ha completado un nivel.  
+Este evento aparece en el **Online Feed** (panel superior izquierdo), mostrando:
+
+- Nombre del jugador  
+- Nivel completado  
+- Estrellas obtenidas  
+- Puntaje logrado  
+
+### 2️⃣ `scores_snapshot`
+Contiene el **Top 10 Global** actualizado y ordenado por puntaje.
+
+El juego almacena esta información en:
+
+```js
+window.globalScores
+```
+
+Este ranking puede consultarse desde el menú mediante el botón **Puntajes Globales**.
+
+---
+
+## 🧑‍💻 Nickname del Jugador
+
+En la pantalla de selección de nivel, el jugador puede ingresar un nombre o nickname personalizado.
+
+Ese nombre se utiliza para:
+
+- Registrar sus resultados en el ranking global  
+- Mostrar su identidad en el Online Feed  
+- Asociar sus estadísticas al historial online  
+- Personalizar la experiencia multijugador simple  
+
+---
+
+## 📡 Flujo Completo del Sistema Online
+
+```
+Jugador completa nivel
+          ↓
+main.js envía datos JSON → servidor WebSocket
+          ↓
+Servidor guarda score en scores.json
+          ↓
+Servidor calcula y ordena el Top 10 global
+          ↓
+Servidor envía:
+    • Evento "level_complete" (broadcast)
+    • Snapshot "scores_snapshot" con ranking
+          ↓
+El juego actualiza:
+    • Online Feed (eventos recientes)
+    • window.globalScores (ranking global)
+```
+
+
+
+---
 
 ## 🔮 Futuras Mejoras
 
