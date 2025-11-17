@@ -74,12 +74,12 @@ class Game {
             }
 
             // Toggle FPS monitor
-            if (e.key === 'F3' && window.performanceMonitor) {
+            if (e.key === '3' && window.performanceMonitor) {
                 window.performanceMonitor.toggle();
             }
 
             // Toggle mute
-            if (e.key === 'F1') {
+            if (e.key === '1') {
                 this.audioManager.toggleMute();
             }
         });
@@ -283,7 +283,7 @@ class Game {
         this.ctx.fillText("- Espacio = Saltar", x, y + lineHeight * 3);
         this.ctx.fillText("- Tecla 'D' = Disparar", x, y + lineHeight * 4);
         this.ctx.fillText("- Tecla 'M' = Misiones", x, y + lineHeight * 5);
-        this.ctx.fillText("- F1 = Mute Audio", x, y + lineHeight * 6);
+        this.ctx.fillText("- 1 = Mute Audio", x, y + lineHeight * 6);
         this.ctx.font = "18px Arial";
         this.ctx.fillText("¡Recoge monedas y elimina enemigos!", x, y + lineHeight * 8);
         this.ctx.fillText("¡Coge la burbuja para un disparo potenciado!", x, y + lineHeight * 9);

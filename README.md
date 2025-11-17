@@ -281,7 +281,7 @@ Este proyecto es de uso educativo como parte del curso de Aplicaciones Web.
 ## 🐛 Debugging
 
 ### Activar Monitor de Rendimiento
-Presiona `F3` durante el juego para ver:
+Presiona `3` durante el juego para ver:
 - FPS actual (verde: >45, amarillo: 30-45, rojo: <30)
 - Min/Max/Avg FPS
 - Número de entidades activas
