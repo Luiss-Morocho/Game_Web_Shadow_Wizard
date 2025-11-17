@@ -134,7 +134,6 @@ window.onload = function() {
             const player = s.player || 'Jugador';
             const level = s.level || '?';
 
-            // Nada de "??" ni "? ?", solo ternario normal:
             const stars = (s.stars !== undefined && s.stars !== null) ? s.stars : 0;
             const score = (s.score !== undefined && s.score !== null) ? s.score : 0;
 
@@ -559,18 +558,33 @@ window.onload = function() {
 
         // Cuando llegan mensajes del servidor (scores de otros jugadores, etc.)
         wsClient.onMessage((msg) => {
-            // 1) Mensajes individuales de nivel completo → ONLINE FEED
+            // 1) Mensajes individuales de nivel completo → ONLINE FEED + RANKING LOCAL
             if (msg.type === 'level_complete') {
+                // Feed visual
                 if (!game.onlineFeed) game.onlineFeed = [];
                 game.onlineFeed.unshift(msg);
                 game.onlineFeed = game.onlineFeed.slice(0, 5); // máximo 5 mensajes
+
+                // Actualizar ranking global local (Top 10 por score)
+                const entry = {
+                    player: msg.player ? msg.player : 'Jugador',
+                    level: msg.level ? msg.level : '?',
+                    stars: (msg.stars !== undefined && msg.stars !== null) ? msg.stars : 0,
+                    score: (msg.score !== undefined && msg.score !== null) ? msg.score : 0,
+                    time: (msg.time !== undefined && msg.time !== null) ? msg.time : 0,
+                };
+
+                window.globalScores.push(entry);
+                window.globalScores.sort((a, b) => (b.score || 0) - (a.score || 0));
+                window.globalScores = window.globalScores.slice(0, 10);
             }
 
-            // 2) Snapshot de puntajes globales → RANKING GLOBAL
+            // 2) Si algún día el servidor envía snapshot, también lo usamos
             if (msg.type === 'scores_snapshot' && Array.isArray(msg.scores)) {
-                window.globalScores = msg.scores.slice(); // copiar top enviado por el servidor
+                window.globalScores = msg.scores.slice();
             }
         });
+
 
 
         // Inicializar controles táctiles
