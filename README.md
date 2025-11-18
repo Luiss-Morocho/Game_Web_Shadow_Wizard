@@ -17,6 +17,7 @@
 - [Requisitos del Proyecto](#requisitos-del-proyecto)
 - [Créditos](#créditos)
 - [Licencia](#licencia)
+- [BONUS](#bonus)
 
 ---
 
@@ -423,7 +424,7 @@ Duración: 60 segundos
 ## 🎯 **PUNTAJE TOTAL: 105/100**
 
 ---
-# 🎁 BONUS (+5%) – Sistema Online (WebSocket + Ranking Global)
+## 🎁 BONUS (+5%) – Sistema Online (WebSocket + Ranking Global)
 
 Shadow Wizard implementa una funcionalidad **online real** mediante WebSockets, permitiendo registrar puntajes en un **ranking global persistente**, mostrar actividad de otros jugadores en tiempo real y sincronizar estadísticas entre todos los clientes conectados.
 
