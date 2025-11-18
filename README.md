@@ -20,7 +20,7 @@
 - [BONUS](#bonus)
 
 ---
-
+#descripción
 ## 🎯 Descripción
 
 Shadow Wizard es un arcade shooter side-scrolling donde controlas a un guerrero que debe atravesar 3 niveles llenos de enemigos, plataformas peligrosas y tesoros escondidos. Cada nivel presenta desafíos únicos con sistema de objetivos (estrellas) basado en rendimiento.
